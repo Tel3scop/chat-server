@@ -23,6 +23,7 @@ var chats = &ChatDatabase{
 func Create(_ context.Context, chatData entities.Chat) (entities.Chat, error) {
 	chats.m.Lock()
 	defer chats.m.Unlock()
+
 	chats.sequence++
 	chatData.ID = chats.sequence
 	chats.elems[chats.sequence] = chatData
@@ -37,7 +38,6 @@ func SendMessage(_ context.Context, chatID int64, message entities.Message) erro
 
 	chat, ok := chats.elems[chatID]
 	if !ok {
-
 		return fmt.Errorf("chat %d not found", chatID)
 	}
 
@@ -51,9 +51,9 @@ func SendMessage(_ context.Context, chatID int64, message entities.Message) erro
 func DeleteByID(_ context.Context, id int64) error {
 	chats.m.Lock()
 	defer chats.m.Unlock()
+
 	_, ok := chats.elems[id]
 	if !ok {
-
 		return fmt.Errorf("chat %d not found", id)
 	}
 
