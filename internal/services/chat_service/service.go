@@ -13,7 +13,6 @@ import (
 func Create(ctx context.Context, request *chat_v1.CreateRequest) (int64, error) {
 	createdChat, err := chat_storage.Create(ctx, entities.Chat{Usernames: request.Usernames})
 	if err != nil {
-
 		return 0, err
 	}
 
@@ -27,6 +26,7 @@ func DeleteByID(ctx context.Context, id int64) error {
 		log.Println(err.Error())
 		return err
 	}
+
 	return nil
 }
 
@@ -42,5 +42,6 @@ func SendMessage(ctx context.Context, request *chat_v1.SendMessageRequest) error
 		log.Println(err.Error())
 		return err
 	}
+
 	return nil
 }
