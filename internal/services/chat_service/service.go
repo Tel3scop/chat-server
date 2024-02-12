@@ -37,6 +37,7 @@ func SendMessage(ctx context.Context, request *chat_v1.SendMessageRequest) error
 		Text:      request.Text,
 		Timestamp: request.Timestamp.AsTime(),
 	}
+
 	err := chat_storage.SendMessage(ctx, request.ChatId, message)
 	if err != nil {
 		log.Println(err.Error())
