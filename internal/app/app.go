@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Tel3scop/chat-server/internal/connector/auth"
 	"github.com/rakyll/statik/fs"
 	"github.com/rs/cors"
 
@@ -124,6 +125,10 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 	chatAPI.RegisterChatV1Server(a.grpcServer, a.serviceProvider.ChatImpl(ctx))
+	err := auth.New(a.serviceProvider.Config().AuthService.Host, a.serviceProvider.Config().AuthService.Port)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

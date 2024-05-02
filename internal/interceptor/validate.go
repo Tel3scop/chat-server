@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Tel3scop/chat-server/internal/config"
 	"github.com/Tel3scop/chat-server/internal/connector/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -18,7 +17,7 @@ type validator interface {
 }
 
 // CheckAuth интерсептор, который позволяет валидировать запрос, если присутствует метод Validate
-func CheckAuth(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func CheckAuth(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("metadata is not provided")
@@ -34,13 +33,11 @@ func CheckAuth(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, ha
 	}
 	accessToken := strings.TrimPrefix(authHeader[0], authPrefix)
 
-	// как сюда конфиг грамотно прокинуть?
-	newConfig, err := config.New()
-	if err != nil {
-		return nil, err
+	if info == nil {
+		return nil, fmt.Errorf("can not get path")
 	}
 
-	err = auth.CheckAuth(newConfig, accessToken, "")
+	err := auth.CheckAuth(accessToken, info.FullMethod)
 	if err != nil {
 		return nil, err
 	}
