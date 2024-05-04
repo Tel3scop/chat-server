@@ -1,27 +1,22 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
-	"net"
 
-	"github.com/Tel3scop/chat-server/internal/handlers"
-)
-
-const (
-	grpcPort = 50051
-	protocol = "tcp"
+	"github.com/Tel3scop/chat-server/internal/app"
 )
 
 func main() {
-	lis, err := net.Listen(protocol, fmt.Sprintf(":%d", grpcPort))
+	ctx := context.Background()
+
+	a, err := app.NewApp(ctx)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("failed to init app: %s", err.Error())
 	}
 
-	server := handlers.Run()
-	log.Printf("server listening at %v", lis.Addr())
-	if err = server.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	err = a.Run()
+	if err != nil {
+		log.Fatalf("failed to run app: %s", err.Error())
 	}
 }
