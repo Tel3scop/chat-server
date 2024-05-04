@@ -9,13 +9,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Tel3scop/chat-server/internal/connector/auth"
 	"github.com/rakyll/statik/fs"
 	"github.com/rs/cors"
 
 	"github.com/Tel3scop/chat-server/internal/closer"
 	"github.com/Tel3scop/chat-server/internal/config"
-	"github.com/Tel3scop/chat-server/internal/interceptor"
 	chatAPI "github.com/Tel3scop/chat-server/pkg/chat_v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -118,17 +116,14 @@ func (a *App) initServiceProvider(_ context.Context) error {
 }
 
 func (a *App) initGRPCServer(ctx context.Context) error {
+	c := a.serviceProvider.InterceptorClient()
 	a.grpcServer = grpc.NewServer(
 		grpc.Creds(insecure.NewCredentials()),
-		grpc.UnaryInterceptor(interceptor.CheckAuth),
+		grpc.UnaryInterceptor(c.CheckAuth),
 	)
 
 	reflection.Register(a.grpcServer)
 	chatAPI.RegisterChatV1Server(a.grpcServer, a.serviceProvider.ChatImpl(ctx))
-	err := auth.New(a.serviceProvider.Config().AuthService.Host, a.serviceProvider.Config().AuthService.Port)
-	if err != nil {
-		return err
-	}
 
 	return nil
 }

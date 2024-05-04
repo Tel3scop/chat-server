@@ -4,43 +4,39 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Tel3scop/chat-server/internal/connector"
 	"github.com/Tel3scop/chat-server/pkg/access_v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/metadata"
 )
 
-var Connection *grpc.ClientConn
+// Client экземпляр
+type Client struct {
+	client access_v1.AccessV1Client
+}
 
-func New(host string, port int64) error {
-	var err error
-	Connection, err = grpc.Dial(
+var _ connector.AuthClient = (*Client)(nil)
+
+// New создает новый экземпляр клиента
+func New(host string, port int64) (*Client, error) {
+	conn, err := grpc.Dial(
 		fmt.Sprintf("%s:%d", host, port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to dial GRPC client: %v", err)
+		return nil, fmt.Errorf("failed to dial GRPC client: %v", err)
 	}
-	return nil
+
+	return &Client{
+		client: access_v1.NewAccessV1Client(conn),
+	}, nil
 }
 
-// CheckAuth вызов метода Check из пакета auth-service
-func CheckAuth(token, endpoint string) error {
-	ctx := context.Background()
-	md := metadata.New(map[string]string{"Authorization": "Bearer " + token})
-	ctx = metadata.NewOutgoingContext(ctx, md)
-
-	//пока его закинул в pkg, как заапрувишь auth, просто через go get добавлю пакет
-	cl := access_v1.NewAccessV1Client(Connection)
-
-	_, err := cl.Check(ctx, &access_v1.CheckRequest{
+// Check calls authentication service method for authorization.
+func (c *Client) Check(ctx context.Context, endpoint string) error {
+	_, err := c.client.Check(ctx, &access_v1.CheckRequest{
 		EndpointAddress: endpoint,
 	})
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("Access granted")
-	return nil
+	return err
 }

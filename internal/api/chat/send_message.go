@@ -2,7 +2,6 @@ package chat
 
 import (
 	"context"
-	"log"
 
 	"github.com/Tel3scop/chat-server/internal/api/converter"
 	chatAPI "github.com/Tel3scop/chat-server/pkg/chat_v1"
@@ -11,9 +10,7 @@ import (
 
 // SendMessage метод отправки сообщения
 func (i *Implementation) SendMessage(ctx context.Context, req *chatAPI.SendMessageRequest) (*emptypb.Empty, error) {
-	log.Printf("Sending message: %+v", req)
-	requestModel := converter.ToMessageModelFromRequest(req)
-	err := i.messageService.SendMessage(ctx, req.ChatId, requestModel)
+	err := i.messageService.SendMessage(ctx, req.ChatId, converter.ToMessageModelFromRequest(req))
 	if err != nil {
 		return nil, err
 	}

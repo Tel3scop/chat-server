@@ -10,6 +10,8 @@ import (
 	"github.com/Tel3scop/chat-server/internal/client/db/transaction"
 	"github.com/Tel3scop/chat-server/internal/closer"
 	"github.com/Tel3scop/chat-server/internal/config"
+	"github.com/Tel3scop/chat-server/internal/connector/auth"
+	"github.com/Tel3scop/chat-server/internal/interceptor"
 	"github.com/Tel3scop/chat-server/internal/repository"
 	chatRepo "github.com/Tel3scop/chat-server/internal/repository/chat"
 	messageRepo "github.com/Tel3scop/chat-server/internal/repository/message"
@@ -26,10 +28,11 @@ type serviceProvider struct {
 	chatRepository    repository.ChatRepository
 	messageRepository repository.MessageRepository
 
-	chatService    service.ChatService
-	messageService service.MessageService
-
-	chatImpl *chat.Implementation
+	chatService       service.ChatService
+	messageService    service.MessageService
+	authClient        *auth.Client
+	interceptorClient *interceptor.Client
+	chatImpl          *chat.Implementation
 }
 
 func newServiceProvider() *serviceProvider {
@@ -47,6 +50,27 @@ func (s *serviceProvider) Config() *config.Config {
 	}
 
 	return s.config
+}
+
+func (s *serviceProvider) InterceptorClient() *interceptor.Client {
+	if s.interceptorClient == nil {
+		s.interceptorClient = &interceptor.Client{
+			Client: s.AuthClient(),
+		}
+	}
+	return s.interceptorClient
+}
+
+func (s *serviceProvider) AuthClient() *auth.Client {
+
+	if s.authClient == nil {
+		var err error
+		s.authClient, err = auth.New(s.Config().AuthService.Host, s.Config().AuthService.Port)
+		if err != nil {
+			log.Fatal("Failed to create auth client", err.Error())
+		}
+	}
+	return s.authClient
 }
 
 func (s *serviceProvider) DBClient(ctx context.Context) db.Client {
