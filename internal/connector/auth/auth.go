@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/Tel3scop/auth/pkg/access_v1"
 	"github.com/Tel3scop/chat-server/internal/connector"
-	"github.com/Tel3scop/chat-server/pkg/access_v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
