@@ -9,7 +9,8 @@ import (
 
 // SendMessage отправка сообщения в чат
 func (s *serv) SendMessage(ctx context.Context, chatID int64, message model.Message) error {
-	err := s.messageRepository.SendMessage(ctx, chatID, message)
+
+	err := s.chatRepository.SendMessage(ctx, chatID, message)
 	if err != nil {
 		log.Println(err.Error())
 		return err

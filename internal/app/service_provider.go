@@ -14,22 +14,18 @@ import (
 	"github.com/Tel3scop/chat-server/internal/interceptor"
 	"github.com/Tel3scop/chat-server/internal/repository"
 	chatRepo "github.com/Tel3scop/chat-server/internal/repository/chat"
-	messageRepo "github.com/Tel3scop/chat-server/internal/repository/message"
 	"github.com/Tel3scop/chat-server/internal/service"
 	chatService "github.com/Tel3scop/chat-server/internal/service/chat"
-	messageService "github.com/Tel3scop/chat-server/internal/service/message"
 )
 
 type serviceProvider struct {
 	config *config.Config
 
-	dbClient          db.Client
-	txManager         db.TxManager
-	chatRepository    repository.ChatRepository
-	messageRepository repository.MessageRepository
+	dbClient       db.Client
+	txManager      db.TxManager
+	chatRepository repository.ChatRepository
 
 	chatService       service.ChatService
-	messageService    service.MessageService
 	authClient        *auth.Client
 	interceptorClient *interceptor.Client
 	chatImpl          *chat.Implementation
@@ -108,14 +104,6 @@ func (s *serviceProvider) ChatRepository(ctx context.Context) repository.ChatRep
 	return s.chatRepository
 }
 
-func (s *serviceProvider) MessageRepository(ctx context.Context) repository.MessageRepository {
-	if s.messageRepository == nil {
-		s.messageRepository = messageRepo.NewRepository(s.DBClient(ctx))
-	}
-
-	return s.messageRepository
-}
-
 func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
 	if s.chatService == nil {
 		s.chatService = chatService.NewService(
@@ -127,22 +115,10 @@ func (s *serviceProvider) ChatService(ctx context.Context) service.ChatService {
 	return s.chatService
 }
 
-func (s *serviceProvider) MessageService(ctx context.Context) service.MessageService {
-	if s.messageService == nil {
-		s.messageService = messageService.NewService(
-			s.MessageRepository(ctx),
-			s.TxManager(ctx),
-		)
-	}
-
-	return s.messageService
-}
-
 func (s *serviceProvider) ChatImpl(ctx context.Context) *chat.Implementation {
 	if s.chatImpl == nil {
 		s.chatImpl = chat.NewImplementation(
 			s.ChatService(ctx),
-			s.MessageService(ctx),
 		)
 	}
 
