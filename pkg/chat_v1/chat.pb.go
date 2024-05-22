@@ -761,14 +761,14 @@ var file_chat_proto_goTypes = []interface{}{
 	(*SendMessageRequest)(nil),    // 8: chat_v1.SendMessageRequest
 	(*ConnectChatRequest)(nil),    // 9: chat_v1.ConnectChatRequest
 	(*Message)(nil),               // 10: chat_v1.Message
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.CreatedAt
 	(*emptypb.Empty)(nil),         // 12: google.protobuf.Empty
 }
 var file_chat_proto_depIdxs = []int32{
 	4,  // 0: chat_v1.GetChatsResponse.chats:type_name -> chat_v1.Chat
 	10, // 1: chat_v1.GetMessagesResponse.messages:type_name -> chat_v1.Message
-	11, // 2: chat_v1.SendMessageRequest.timestamp:type_name -> google.protobuf.Timestamp
-	11, // 3: chat_v1.Message.created_at:type_name -> google.protobuf.Timestamp
+	11, // 2: chat_v1.SendMessageRequest.timestamp:type_name -> google.protobuf.CreatedAt
+	11, // 3: chat_v1.Message.created_at:type_name -> google.protobuf.CreatedAt
 	5,  // 4: chat_v1.ChatV1.Create:input_type -> chat_v1.CreateRequest
 	7,  // 5: chat_v1.ChatV1.Delete:input_type -> chat_v1.DeleteRequest
 	8,  // 6: chat_v1.ChatV1.SendMessage:input_type -> chat_v1.SendMessageRequest

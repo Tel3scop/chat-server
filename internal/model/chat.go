@@ -15,7 +15,8 @@ type Chat struct {
 
 // Message Структура сообщения
 type Message struct {
-	From      string    `json:"from" db:"username"`
-	Text      string    `json:"text" db:"text"`
-	Timestamp time.Time `json:"timestamp" db:"created_at"`
+	From string `json:"from" db:"username"`
+	Text string `json:"text" db:"text"`
+
+	CreatedAt time.Time `json:"timestamp" db:"created_at"`
 }

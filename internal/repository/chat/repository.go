@@ -21,6 +21,15 @@ const (
 	columnUpdatedAt = "updated_at"
 )
 
+// таблица chat_user
+const (
+	tableChatUser = "chat_user"
+
+	columnChatUserChatID    = "chat_id"
+	columnChatUserUsername  = "username"
+	columnChatUserCreatedAt = "created_at"
+)
+
 // таблица messages
 const (
 	tableMessages = "messages"
@@ -95,9 +104,9 @@ func (r *repo) DeleteByID(ctx context.Context, id int64) error {
 
 // LinkUsers Метод привязывает юзеров к конкретному чату.
 func (r *repo) LinkUsers(ctx context.Context, chatID int64, usernames []string, createdAt time.Time) error {
-	builder := sq.Insert("chat_user").
+	builder := sq.Insert(tableChatUser).
 		PlaceholderFormat(sq.Dollar).
-		Columns("chat_id", "username", "created_at")
+		Columns(columnChatUserChatID, columnChatUserUsername, columnChatUserCreatedAt)
 	for _, username := range usernames {
 		builder = builder.Values(chatID, username, createdAt)
 	}
@@ -125,7 +134,7 @@ func (r *repo) CheckChatByUsernameAndID(ctx context.Context, username string, ID
 	builder := sq.Select(columnID).From(tableName).PlaceholderFormat(sq.Dollar).
 		Join("chat_user on chats.ID = chat_user.chat_id").
 		Where(sq.Eq{columnID: ID}).
-		Where(sq.Eq{"username": username}).
+		Where(sq.Eq{columnChatUserUsername: username}).
 		Limit(1)
 
 	query, args, err := builder.ToSql()
@@ -151,7 +160,7 @@ func (r *repo) SendMessage(ctx context.Context, chatID int64, message model.Mess
 	builder := sq.Insert(tableMessages).
 		PlaceholderFormat(sq.Dollar).
 		Columns(columnMessageChatID, columnMessageText, columnMessageUsername, columnMessageCreatedAt).
-		Values(chatID, message.Text, message.From, message.Timestamp)
+		Values(chatID, message.Text, message.From, message.CreatedAt)
 
 	query, args, err := builder.ToSql()
 	if err != nil {

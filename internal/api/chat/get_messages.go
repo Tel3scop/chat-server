@@ -9,7 +9,6 @@ import (
 
 // GetMessages метод получения сообщений
 func (i *Implementation) GetMessages(ctx context.Context, req *chatAPI.GetMessagesRequest) (*chatAPI.GetMessagesResponse, error) {
-
 	messages, err := i.chatService.GetMessagesByChatID(ctx, req.GetChatId(), req.GetCount())
 	if err != nil {
 		return nil, err

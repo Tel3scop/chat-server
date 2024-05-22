@@ -13,7 +13,7 @@ func ToMessageModelFromRequest(request *chatAPI.SendMessageRequest) model.Messag
 	return model.Message{
 		From:      request.From,
 		Text:      request.Text,
-		Timestamp: time.Now(),
+		CreatedAt: time.Now(),
 	}
 }
 
@@ -48,7 +48,7 @@ func ToMessagesResponseFromModel(data []model.Message) *chatAPI.GetMessagesRespo
 		response.Messages = append(response.Messages, &chatAPI.Message{
 			From:      message.From,
 			Text:      message.Text,
-			CreatedAt: timestamppb.New(message.Timestamp),
+			CreatedAt: timestamppb.New(message.CreatedAt),
 		})
 	}
 	return &response

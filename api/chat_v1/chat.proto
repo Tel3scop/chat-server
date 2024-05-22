@@ -35,27 +35,32 @@ service ChatV1 {
       body: "*"
     };
   };
+
   rpc Delete(DeleteRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       delete: "/chat/v1/{id}"
     };
   };
+
   rpc SendMessage(SendMessageRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       post: "/chat/v1/{chat_id}/send"
       body: "*"
     };
   };
+
   rpc GetChats(GetChatsRequest) returns (GetChatsResponse){
     option (google.api.http) = {
       get: "/chat/by_user/{name}"
     };
   };
+
   rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse){
     option (google.api.http) = {
       get: "/chat/{chat_id}/messages/{count}"
     };
   };
+
   rpc ConnectChat (ConnectChatRequest) returns (stream Message);
 }
 
@@ -63,8 +68,9 @@ message GetChatsRequest {
   string name = 1;
 }
 message GetMessagesRequest {
+
   int64 chat_id = 1;
-  int64 count = 2;
+  int64 limit = 2;
 }
 
 message GetChatsResponse {
